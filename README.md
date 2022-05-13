@@ -20,7 +20,7 @@ Config OpenClash OpenWrt Spesial Edition
 Support Multi-WAN, Pisah Traffic, Bypass Traffic, Support Game, Support Streaming
 </p>
 <p align="center">
-- Terimakasih <a href="https://github.com/vernesong/OpenClash" target="_blank"> Vernesong </a> For Clash OpenWrt ，<a href="https://github.com/maliksih" target="_blank"> Maliksih </a> Untuk Rule Profider ，<a href="https://github.com/maliksih" target="_blank"> Reyre </a>Best Firmware  ，Dan <a href="https://github.com/maliksih" target="_blank"> Howdy </a>The Best Server -
+- Terimakasih <a href="https://github.com/vernesong/OpenClash" target="_blank"> Vernesong </a> For Clash OpenWrt ，<a href="https://github.com/maliksih" target="_blank"> Maliksih </a> Untuk Rule Provider ，<a href="https://www.facebook.com/r3yr3" target="_blank"> Reyre </a>Best Firmware  ，Dan <a href="https://howdy.id/" target="_blank"> Howdy </a>The Best Server -
 </p>
 
 **Konten Tabel**
