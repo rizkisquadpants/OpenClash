@@ -36,7 +36,7 @@ Support Multi-WAN, Pisah Traffic, Bypass Traffic, Support Game, Support Streamin
 
 Plugin ini adalah klien Clash yang bisa dijalankan di OpenWrt. Kompatibel dengan Shadowsocks ShadowsocksR, Vmess, Trojan, Snell dan protokol lainnya, dan mengimplementasikan proxy kebijakan sesuai dengan konfigurasi aturan yang fleksibel.
 
- <img src="https://github.com/vernesong/OpenClash/raw/master/img/log.png">
+ <img src="https://github.com/rizkisquadpants/OpenClash/blob/main/assets/Main.png">
  
 ### Edit Files Proxy Provider
 
@@ -116,4 +116,4 @@ Yacd adalah yet another clash dashboard, yakni dashboard clash yang dapat diguna
 #### Proxies
 
 Untuk pertama kali start openclash maka harus setting proxies `GLOBAL` ke traffic proxy-groups `RTA SERVER | Clash`.
- <img src="https://github.com/vernesong/OpenClash/raw/master/img/log.png">
+ <img src="https://github.com/rizkisquadpants/OpenClash/blob/main/assets/Yacd.png">
