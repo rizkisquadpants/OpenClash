@@ -7,8 +7,8 @@
   <p align="center">
     <img src="https://img.shields.io/badge/Config Version-v1.1-blue.svg">
   </a>
-  <a target="_blank" href="https://github.com/vernesong/OpenClash/releases/tag/v0.45.16-beta">
-    <img src="https://img.shields.io/badge/New Release-v0.45.16--beta-orange.svg">
+  <a target="_blank" href="https://github.com/rizkisquadpants/OpenClash/archive/refs/heads/main.zip">
+    <img src="https://img.shields.io/badge/Download Config-Klik Disini-orange.svg">
   </a>
   </p>
   
