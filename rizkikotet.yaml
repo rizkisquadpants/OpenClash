@@ -1,0 +1,435 @@
+#=========================================
+# CONFIG OPENCLASH SPECIAL EDITION V1.1 MULTI ISP
+# CREATED BY : RIZKIKOTET
+# THANKS FOR : ALLAH SWT
+#   MALIKSIH ( RULE PROFIDER )
+#   REYRE ( FIRMWARE OPENWRT )
+#   HOWDY ( THE BEST SERVER )
+#=========================================
+
+#=========================================
+proxy-providers:
+  Server-ID:
+    type: file
+    path: "./proxy_provider/Server-ID.yaml"
+    health-check:
+      enable: true
+      url: http://id-auth.bypass.id/ping.php
+      interval: 200
+
+  Server-SG:
+    type: file
+    path: "./proxy_provider/Server-SG.yaml"
+    health-check:
+      enable: true
+      url: http://id-auth.bypass.id/ping.php
+      interval: 200
+
+  Server-Game:
+    type: file
+    path: "./proxy_provider/Server-Game.yaml"
+    health-check:
+      enable: true
+      url: http://id-auth.bypass.id/ping.php
+      interval: 200
+#=========================================
+
+#=========================================
+redir-port: 7892
+tproxy-port: 7895
+port: 7890
+socks-port: 7891
+mixed-port: 7893
+mode: rule
+log-level: info
+allow-lan: true
+external-controller: 0.0.0.0:9090
+secret: rizkikotet
+bind-address: "*"
+external-ui: "/usr/share/openclash/dashboard"
+ipv6: false
+#=========================================
+#=========================================
+tun:
+  enable: true
+  stack: system
+  dns-hijack:
+  - tcp://8.8.8.8:53
+  - tcp://8.8.4.4:53
+#=========================================
+#=========================================
+profile:
+  store-selected: true
+  store-fake-ip: true
+#=========================================
+#=========================================
+dns:
+  enable: true
+  ipv6: false
+  enhanced-mode: redir-host
+  fake-ip-range: 198.18.0.1/16
+  listen: 0.0.0.0:7874
+  fake-ip-filter:
+    - "+.*"
+  nameserver:
+    - 1.1.1.1
+    - 8.8.8.8
+    - https://dns.adguard.com/dns-query
+    - https://dns-google.com/dns-query
+    - tls://dns.adguard.com
+    - tls://dns-google.com/
+  default-nameserver:
+    - 1.1.1.1
+    - 8.8.8.8
+#=========================================
+#=========================================
+
+#=========================================
+# SETTING PROXY GRUP
+#=========================================
+proxy-groups:
+#=========================================
+  # MAIN PROXY GRUP
+  - name: RTA SERVER | Clash
+    type: select
+    proxies:
+      - TrafficUmum
+#=========================================
+# KHUSU PENGGUNA 1 ISP HAPUS PROXY GRUP "Direct ISP2"
+# HAPUS JUGA PADA PROXY GRUP "Direct SELECT-ISP"
+#=========================================
+  # (EDIT) DIRECT ISP 1 | Interface Name
+  # Default : eth1
+  - name: Direct ISP1
+    interface-name: eth1 #(Sesuai Interface Modem)
+    type: select
+    proxies:
+      - DIRECT
+  
+  # (EDIT) DIRECT ISP 2 | Interface Name
+  # Default : eth2  
+  - name: Direct ISP2 # ( HAPUS PROXY GRUP INI BILA MENGGUNAKAN 1 ISP )
+    interface-name: eth2 #(Sesuai Interface Modem)
+    type: select
+    proxies:
+      - DIRECT
+
+  # SELECT Direct
+  - name: Direct SELECT-ISP
+    type: select
+    use:
+    proxies:
+      - Direct ISP1 # Dari ISP1
+      - Direct ISP2 # Dari ISP2 ( HAPUS BARIS INI BILA MENGGUNAKAN 1 ISP )
+#=========================================
+#=========================================
+  - name: Route Server ID
+    type: load-balance
+    strategy: round-robin
+    disable-udp: false
+    use:
+      - Server-ID
+    url: http://id-auth.bypass.id/ping.php
+    interval: 360
+
+  - name: Route Server SG
+    type: load-balance
+    strategy: round-robin
+    disable-udp: false
+    use:
+      - Server-SG
+    url: http://id-auth.bypass.id/ping.php
+    interval: 360
+
+  - name: Route Server GAME
+    type: url-test
+    disable-udp: false
+    use:
+      - Server-Game
+    url: http://id-auth.bypass.id/ping.php
+    interval: 600
+#=========================================
+
+#=========================================
+# TRAFFIC UMUM
+#=========================================
+  - name: TrafficUmum
+    type: fallback
+    lazy: true
+    disable-udp: false
+    proxies: # DEFAULT SERVER ID
+      - Route Server ID
+      - Route Server SG
+      - DIRECT
+    url: http://id-auth.bypass.id/ping.php
+    interval: '30'
+#=========================================
+# TRAFFIC INDO
+#=========================================
+  - name: TrafficIndo
+    type: fallback
+    lazy: true
+    disable-udp: false
+    proxies: # DEFAULT SERVER ID
+      - Route Server ID
+      - Route Server SG
+      - DIRECT
+    url: http://id-auth.bypass.id/ping.php
+    interval: '30'
+#=========================================
+# TRAFFIC GAME
+#=========================================
+  - name: TrafficGaming
+    type: select
+    disable-udp: false
+    proxies:
+      - Route Server GAME
+      - DIRECT
+    use:
+      - Server-Game
+#=========================================
+# TRAFFIC SOSMED
+#=========================================
+  - name: TrafficSosmed
+    type: fallback
+    lazy: true
+    disable-udp: false
+    proxies: # DEFAULT SERVER id
+      - Route Server ID
+      - Route Server SG
+      - DIRECT
+    url: http://id-auth.bypass.id/ping.php
+    interval: '30'
+#=========================================
+# TRAFFIC STREAMING
+#=========================================
+  - name: TrafficStreaming
+    type: fallback
+    lazy: true
+    disable-udp: false
+    proxies: # DEFAULT SERVER SG
+      - Route Server SG
+      - Route Server ID
+      - DIRECT
+    url: http://id-auth.bypass.id/ping.php
+    interval: '30'
+#=========================================
+#=========================================
+rules:
+  - IP-CIDR,198.18.0.1/16,REJECT,no-resolve
+  - RULE-SET,rule_Direct,Direct SELECT-ISP
+  #=========================================
+  # BASE TRAFFIC SOSMED
+  #=========================================
+  - RULE-SET,rule_Sosmed,TrafficSosmed
+  - RULE-SET,rule_line,TrafficSosmed
+  - RULE-SET,rule_metaverse,TrafficSosmed
+  - RULE-SET,rule_tiktok,TrafficSosmed
+  - RULE-SET,rule_twitter,TrafficSosmed
+  - RULE-SET,rule_telegram,TrafficSosmed
+  - RULE-SET,rule_telegramcidr,TrafficSosmed
+  #=========================================
+  # BASE TRAFFIC STREAMING
+  #=========================================
+  - RULE-SET,rule_Streaming,TrafficStreaming
+  - RULE-SET,rule_hbo,TrafficStreaming
+  - RULE-SET,rule_iqiyi,TrafficStreaming
+  - RULE-SET,rule_primevideo,TrafficStreaming
+  - RULE-SET,rule_twitch,TrafficStreaming
+  - RULE-SET,rule_Youtube,TrafficStreaming
+  - RULE-SET,rule_videoconferences,TrafficStreaming
+  #=========================================
+  # BASE TRAFFIC GAMING
+  #=========================================
+  - RULE-SET,rule_Gaming,TrafficGaming
+  - RULE-SET,rule_discord,TrafficGaming
+  - RULE-SET,rule_games,TrafficGaming
+  - RULE-SET,rule_portgames,TrafficGaming
+  #=========================================
+  # BASE TRAFFIC KHUSUS SERVER ID
+  #=========================================
+  - RULE-SET,rule_disneyplus,TrafficIndo
+  - RULE-SET,rule_netflix,TrafficIndo
+  - RULE-SET,rule_Indo,TrafficIndo
+  #=========================================
+  # BASE TRAFFIC UMUM
+  #=========================================
+  - RULE-SET,rule_falsepositive,TrafficUmum
+  - RULE-SET,rule_playstore,TrafficUmum
+  - RULE-SET,rule_Speedtest,TrafficUmum
+  - RULE-SET,rule_umum,TrafficUmum
+  #=========================================
+  #=========================================
+  - MATCH,GLOBAL # SETETAH RUNNING PILIH RTA SERVER | Clash
+  #=========================================
+  #=========================================
+
+#=========================================
+# SCRIPT PORT GAME
+#=========================================
+script:
+  shortcuts:
+    allgames: network == 'udp' and dst_port not in [21, 22, 23, 53, 80, 123, 143, 194, 443, 465, 587, 853, 993, 995, 998, 2052, 2053, 2082, 2083, 2086, 2095, 2096, 5222, 5228, 5229, 5230, 8080, 8443, 8880, 8888, 8889]
+#=========================================
+#=========================================
+
+#=========================================
+# BASE RULE PROFIDER
+#=========================================
+rule-providers:
+  rule_Direct:
+    type: file
+    behavior: classical
+    path: "./rule_provider/rule_direct.yaml"
+  rule_umum:
+    type: http
+    behavior: classical
+    path: "./rule_provider/rule_umum.yaml"
+    url: https://cdn.jsdelivr.net/gh/malikshi/open_clash@main/rule_provider/rule_umum.yaml
+    interval: 86400
+  rule_portgames:
+    type: http
+    behavior: classical
+    path: "./rule_provider/rule_portgames.yaml"
+    url: https://cdn.jsdelivr.net/gh/malikshi/open_clash@main/rule_provider/rule_portgames.yaml
+    interval: 86400
+  rule_videoconferences:
+    type: http
+    behavior: classical
+    path: "./rule_provider/rule_videoconferences.yaml"
+    url: https://cdn.jsdelivr.net/gh/malikshi/open_clash@main/rule_provider/rule_videoconferences.yaml
+    interval: 86400
+  rule_Indo:
+    type: http
+    behavior: classical
+    path: "./rule_provider/rule_Indo.yaml"
+    url: https://cdn.jsdelivr.net/gh/malikshi/open_clash@main/rule_provider/rule_Indo.yaml
+    interval: 86400
+  rule_Sosmed:
+    type: http
+    behavior: classical
+    path: "./rule_provider/rule_sosmed.yaml"
+    url: https://cdn.jsdelivr.net/gh/malikshi/open_clash@main/rule_provider/rule_sosmed.yaml
+    interval: 86400
+  rule_Streaming:
+    type: http
+    behavior: classical
+    path: "./rule_provider/rule_streaming.yaml"
+    url: https://cdn.jsdelivr.net/gh/malikshi/open_clash@main/rule_provider/rule_streaming.yaml
+    interval: 86400
+  rule_Gaming:
+    type: http
+    behavior: classical
+    path: "./rule_provider/rule_gaming.yaml"
+    url: https://cdn.jsdelivr.net/gh/malikshi/open_clash@main/rule_provider/rule_gaming.yaml
+    interval: 86400
+  rule_Speedtest:
+    type: http
+    behavior: classical
+    url: https://cdn.jsdelivr.net/gh/malikshi/open_clash@main/rule_provider/rule_speedtest.yaml
+    path: "./rule_provider/rule_speedtest.yaml"
+    interval: 86400
+  rule_discord:
+    type: http
+    behavior: domain
+    url: https://rules.kr328.app/discord.yaml
+    path: "./rule_provider/rule_discord.yaml"
+    interval: 86400
+  rule_falsepositive:
+    type: http
+    behavior: classical
+    url: https://cdn.jsdelivr.net/gh/malikshi/open_clash@main/rule_provider/rule_falsepositive.yaml
+    path: "./rule_provider/rule_falsepositive.yaml"
+    interval: 86400
+  rule_telegramcidr:
+    type: http
+    behavior: ipcidr
+    url: https://cdn.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/telegramcidr.txt
+    path: "./rule_provider/rule_telegramcidr.yaml"
+    interval: 86400
+  rule_telegram:
+    type: http
+    behavior: domain
+    url: https://rules.kr328.app/telegram.yaml
+    path: "./rule_provider/rule_telegram.yaml"
+    interval: 86400
+  rule_disneyplus:
+    type: http
+    behavior: domain
+    url: https://rules.kr328.app/disney.yaml
+    path: "./rule_provider/rule_disneyplus.yaml"
+    interval: 86400
+  rule_games:
+    type: http
+    behavior: domain
+    url: https://rules.kr328.app/category-games.yaml
+    path: "./rule_provider/rule_games.yaml"
+    interval: 86400
+  rule_hbo:
+    type: http
+    behavior: domain
+    url: https://rules.kr328.app/hbo.yaml
+    path: "./rule_provider/rule_hbo.yaml"
+    interval: 86400
+  rule_iqiyi:
+    type: http
+    behavior: domain
+    url: https://rules.kr328.app/iqiyi.yaml
+    path: "./rule_provider/rule_iqiyi.yaml"
+    interval: 86400
+  rule_line:
+    type: http
+    behavior: domain
+    url: https://rules.kr328.app/line.yaml
+    path: "./rule_provider/rule_line.yaml"
+    interval: 86400
+  rule_metaverse:
+    type: http
+    behavior: domain
+    url: https://rules.kr328.app/facebook.yaml
+    path: "./rule_provider/rule_metaverse.yaml"
+    interval: 86400
+  rule_netflix:
+    type: http
+    behavior: domain
+    url: https://rules.kr328.app/netflix.yaml
+    path: "./rule_provider/rule_netflix.yaml"
+    interval: 86400
+  rule_primevideo:
+    type: http
+    behavior: domain
+    url: https://rules.kr328.app/primevideo.yaml
+    path: "./rule_provider/rule_primevideo.yaml"
+    interval: 86400
+  rule_playstore:
+    type: http
+    behavior: domain
+    url: https://cdn.jsdelivr.net/gh/malikshi/open_clash@main/rule_provider/rule_playstore.yaml
+    path: "./rule_provider/rule_playstore.yaml"
+    interval: 86400
+  rule_tiktok:
+    type: http
+    behavior: domain
+    url: https://rules.kr328.app/tiktok.yaml
+    path: "./rule_provider/rule_tiktok.yaml"
+    interval: 86400
+  rule_twitch:
+    type: http
+    behavior: domain
+    url: https://rules.kr328.app/twitch.yaml
+    path: "./rule_provider/rule_twitch.yaml"
+    interval: 86400
+  rule_twitter:
+    type: http
+    behavior: domain
+    url: https://rules.kr328.app/twitter.yaml
+    path: "./rule_provider/rule_twitter.yaml"
+    interval: 86400
+  rule_Youtube:
+    type: http
+    behavior: domain
+    url: https://rules.kr328.app/youtube.yaml
+    path: "./rule_provider/rule_Youtube.yaml"
+    interval: 86400
+#=========================================
+#=========================================
