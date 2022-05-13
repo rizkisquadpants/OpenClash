@@ -1,0 +1,2 @@
+# OpenClash
+Config OpenClash OpenWrt
